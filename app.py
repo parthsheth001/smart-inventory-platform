@@ -15,13 +15,10 @@ def health():
 
 @app.route('/get_products',methods=["GET"])
 def get_all_products():
-    if request.method == "GET":
-        """
-        Returns a list of all items.
-        """
-        return jsonify(data), 200
-    else:
-        return jsonify({"message":"Wrong request type."})
+    """
+    Returns a list of all items.
+    """
+    return jsonify(data), 200
 
 
 @app.route('/get_product/<int:product_id>', methods=["GET"])
@@ -43,7 +40,7 @@ def create_product():
 
     if not new_product or 'name' not in new_product:
         return jsonify({"error": "Invalid data. 'name' is required."}), 400
-    max_current_id = max(item['id'] for item in data)
+    max_current_id = max((item['id'] for item in data), default=0)
     new_product['id'] = max_current_id + 1
     data.append(new_product)
     return jsonify({"message": "Item added successfully", "item": new_product}), 201
@@ -55,7 +52,7 @@ def delete_product(product_id):
     """
     product = next((product for product in data if product['id'] == product_id), None)
     if product:
-        data.pop(product)
+        data.remove(product)
         return jsonify({"message":"Product successfully deleted."})
     return jsonify({"message":"Item Not Found"}), 404
 
